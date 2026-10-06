@@ -455,7 +455,11 @@ const MemoCard = memo(function MemoCard({
       layout={LinearTransition.duration(220)}
       style={[
         styles.memoCard,
-        listDensity === "compact" && styles.memoCardCompact,
+        listDensity === "minimal"
+          ? styles.memoCardMinimal
+          : listDensity === "compact"
+            ? styles.memoCardCompact
+            : null,
         selected && styles.memoCardSelected,
         pressAnimatedStyle,
       ]}
@@ -494,7 +498,15 @@ const MemoCard = memo(function MemoCard({
         onPressOut={() => {
           pressScale.value = withTiming(1, { duration: 160 });
         }}
-        style={[styles.memoCardContent, listDensity === "compact" && styles.memoCardContentCompact, selectionMode && styles.memoCardContentWithSelection]}
+        style={[
+          styles.memoCardContent,
+          listDensity === "minimal"
+            ? styles.memoCardContentMinimal
+            : listDensity === "compact"
+              ? styles.memoCardContentCompact
+              : null,
+          selectionMode && styles.memoCardContentWithSelection,
+        ]}
       >
         <View style={styles.memoCardTop}>
           {memo.isPinned ? (
@@ -509,14 +521,16 @@ const MemoCard = memo(function MemoCard({
             {memo.excerpt || "空笔记"}
           </Text>
         ) : null}
-        <View style={[styles.memoMeta, listDensity === "compact" && styles.memoMetaCompact]}>
-          <Text style={styles.memoDate}>{listTimestampKind} {listTimestampLabel}</Text>
-          {memo.tags.slice(0, 3).map((tag) => (
-            <Text key={tag} style={styles.tag}>
-              #{tag}
-            </Text>
-          ))}
-        </View>
+        {listDensity !== "minimal" ? (
+          <View style={[styles.memoMeta, listDensity === "compact" && styles.memoMetaCompact]}>
+            <Text style={styles.memoDate}>{listTimestampKind} {listTimestampLabel}</Text>
+            {memo.tags.slice(0, 3).map((tag) => (
+              <Text key={tag} style={styles.tag}>
+                #{tag}
+              </Text>
+            ))}
+          </View>
+        ) : null}
       </Pressable>
     </Animated.View>
   );

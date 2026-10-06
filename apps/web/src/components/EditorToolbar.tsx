@@ -2,8 +2,6 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Editor } from "@tiptap/react";
 import { useTranslation } from "react-i18next";
 import {
-  Undo2,
-  Redo2,
   Bold,
   Italic,
   Strikethrough,
@@ -25,6 +23,7 @@ import {
   FileText,
   Heading,
   Paintbrush,
+  Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MEMO_EDITOR_TOOLBAR_COLLAPSED_CLASS_NAME } from "@/components/MemoEditorChromeDensity";
@@ -33,9 +32,11 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -360,47 +361,6 @@ export const EditorToolbar = ({
               <MemoEditorToolbarDivider className="hidden sm:block" />
             </>
           ) : null}
-          {onPickAttachment && (
-            <>
-              <EditorToolbarButton
-                title={t("editorToolbar.attachment")}
-                disabled={readOnly}
-                onClick={onPickAttachment}
-              >
-                <Paperclip className="h-4 w-4" />
-              </EditorToolbarButton>
-              <MemoEditorToolbarDivider className="hidden sm:block" />
-            </>
-          )}
-          {onPickExternalLink && (
-            <>
-              <EditorToolbarButton
-                title={
-                  externalLinkActive
-                    ? t("editorToolbar.externalLinkEdit")
-                    : t("editorToolbar.externalLinkShortcut")
-                }
-                active={externalLinkActive}
-                disabled={readOnly}
-                onClick={onPickExternalLink}
-              >
-                <Link className="h-4 w-4" />
-              </EditorToolbarButton>
-              <MemoEditorToolbarDivider className="hidden sm:block" />
-            </>
-          )}
-          {onPickNoteLink && (
-            <>
-              <EditorToolbarButton
-                title={t("editorToolbar.noteLink")}
-                disabled={readOnly}
-                onClick={onPickNoteLink}
-              >
-                <Link2 className="h-4 w-4" />
-              </EditorToolbarButton>
-              <MemoEditorToolbarDivider className="hidden sm:block" />
-            </>
-          )}
           <DropdownMenu>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -454,22 +414,6 @@ export const EditorToolbar = ({
           {showFormattingTools ? (
             <>
               <MemoEditorToolbarDivider className="hidden sm:block" />
-          <EditorToolbarButton
-            title={t("editorToolbar.undo")}
-            disabled={!canRun((current) => current.can().chain().focus().undo().run())}
-            onClick={() => run((current) => current.chain().focus().undo().run())}
-          >
-            <Undo2 className="h-4 w-4" />
-          </EditorToolbarButton>
-          <EditorToolbarButton
-            title={t("editorToolbar.redo")}
-            disabled={!canRun((current) => current.can().chain().focus().redo().run())}
-            onClick={() => run((current) => current.chain().focus().redo().run())}
-          >
-            <Redo2 className="h-4 w-4" />
-          </EditorToolbarButton>
-
-          <MemoEditorToolbarDivider className="hidden sm:block" />
           <EditorToolbarButton
             title={t("editorToolbar.bold")}
             active={isActive("bold")}
@@ -528,22 +472,6 @@ export const EditorToolbar = ({
           >
             <ListOrdered className="h-4 w-4" />
           </EditorToolbarButton>
-          <EditorToolbarButton
-            title={t("editorToolbar.quote")}
-            active={isActive("blockquote")}
-            disabled={disabled}
-            onClick={() => run((current) => current.chain().focus().toggleBlockquote().run())}
-          >
-            <Quote className="h-4 w-4" />
-          </EditorToolbarButton>
-          <EditorToolbarButton
-            title={t("editorToolbar.codeBlock")}
-            active={codeBlockActive}
-            disabled={disabled}
-            onClick={() => run(toggleCodeBlock)}
-          >
-            <SquareCode className="h-4 w-4" />
-          </EditorToolbarButton>
           {showCodeLanguageSelector && (
             <Select
               value={codeBlockLanguage}
@@ -567,34 +495,101 @@ export const EditorToolbar = ({
               </SelectContent>
             </Select>
           )}
-          <EditorToolbarButton
-            title={t("editorToolbar.mermaidDiagram")}
-            active={codeBlockActive && codeBlockLanguage === "mermaid"}
-            disabled={disabled}
-            onClick={() => run(insertMermaidDiagram)}
-          >
-            <ChartNoAxesCombined className="h-4 w-4" />
-          </EditorToolbarButton>
-          {onPickMathFormula && (
-            <EditorToolbarButton
-              title={t("editorToolbar.math")}
-              active={isActive("inlineMath") || isActive("blockMath")}
-              disabled={disabled}
-              onClick={onPickMathFormula}
-            >
-              <Sigma className="h-4 w-4" />
-            </EditorToolbarButton>
-          )}
-          <EditorToolbarButton
-            title={t("editorToolbar.horizontalRule")}
-            disabled={disabled}
-            onClick={() => run((current) => current.chain().focus().setHorizontalRule().run())}
-          >
-            <Minus className="h-4 w-4" />
-          </EditorToolbarButton>
-          <EditorTableMenu editor={editor} readOnly={readOnly} />
             </>
           ) : null}
+          <MemoEditorToolbarDivider className="hidden sm:block" />
+          {onPickExternalLink && (
+            <>
+              <EditorToolbarButton
+                title={
+                  externalLinkActive
+                    ? t("editorToolbar.externalLinkEdit")
+                    : t("editorToolbar.externalLinkShortcut")
+                }
+                active={externalLinkActive}
+                disabled={readOnly}
+                onClick={onPickExternalLink}
+              >
+                <Link className="h-4 w-4" />
+              </EditorToolbarButton>
+            </>
+          )}
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 disabled:pointer-events-none disabled:opacity-40 data-[state=open]:bg-slate-100 data-[state=open]:text-slate-900"
+                    type="button"
+                    aria-label={t("slashMenu.groups.insert")}
+                    disabled={readOnly}
+                    onMouseDown={(event) => event.preventDefault()}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">{t("slashMenu.groups.insert")}</TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent align="start" className="w-52 border border-slate-200 bg-card py-1 shadow-md">
+              {onPickAttachment && (
+                <DropdownMenuItem className="gap-2 text-xs leading-5" onSelect={onPickAttachment}>
+                  <Paperclip className="h-4 w-4 text-slate-500" />
+                  {t("editorToolbar.attachment")}
+                </DropdownMenuItem>
+              )}
+              {onPickNoteLink && (
+                <DropdownMenuItem className="gap-2 text-xs leading-5" onSelect={onPickNoteLink}>
+                  <Link2 className="h-4 w-4 text-slate-500" />
+                  {t("editorToolbar.noteLink")}
+                </DropdownMenuItem>
+              )}
+              {showFormattingTools && (
+                <>
+                  {(onPickAttachment || onPickNoteLink) && <DropdownMenuSeparator className="my-1 bg-slate-100" />}
+                  <DropdownMenuItem
+                    className={cn("gap-2 text-xs leading-5", isActive("blockquote") && "bg-slate-100 text-slate-900")}
+                    disabled={disabled}
+                    onSelect={() => run((current) => current.chain().focus().toggleBlockquote().run())}
+                  >
+                    <Quote className="h-4 w-4 text-slate-500" />
+                    {t("editorToolbar.quote")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className={cn("gap-2 text-xs leading-5", codeBlockActive && "bg-slate-100 text-slate-900")}
+                    disabled={disabled}
+                    onSelect={() => run(toggleCodeBlock)}
+                  >
+                    <SquareCode className="h-4 w-4 text-slate-500" />
+                    {t("editorToolbar.codeBlock")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="gap-2 text-xs leading-5"
+                    disabled={disabled}
+                    onSelect={() => run(insertMermaidDiagram)}
+                  >
+                    <ChartNoAxesCombined className="h-4 w-4 text-slate-500" />
+                    {t("editorToolbar.mermaidDiagram")}
+                  </DropdownMenuItem>
+                  {onPickMathFormula && (
+                    <DropdownMenuItem className="gap-2 text-xs leading-5" disabled={disabled} onSelect={onPickMathFormula}>
+                      <Sigma className="h-4 w-4 text-slate-500" />
+                      {t("editorToolbar.math")}
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem
+                    className="gap-2 text-xs leading-5"
+                    disabled={disabled}
+                    onSelect={() => run((current) => current.chain().focus().setHorizontalRule().run())}
+                  >
+                    <Minus className="h-4 w-4 text-slate-500" />
+                    {t("editorToolbar.horizontalRule")}
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {showFormattingTools && <EditorTableMenu editor={editor} readOnly={readOnly} />}
         </MemoEditorToolbarRow>
         {hasOverflow && (
           <div className="absolute right-3 top-2 z-20 flex h-8 items-center bg-gradient-to-l from-card via-card to-transparent pl-5 sm:right-4 sm:top-0.5">

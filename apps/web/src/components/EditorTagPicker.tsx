@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { CircleAlert, Check, ChevronDown, Loader2, TagPlus, X } from "lucide-react";
+import { CircleAlert, Check, Loader2, Plus, Sparkles, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { normalizeTags, type TagSummary } from "@edgeever/shared";
 import { Button } from "@/components/ui/button";
@@ -147,11 +147,11 @@ export const EditorTagPicker = ({ contentMarkdown, disabled, loadTags, title, va
 
   return (
     <>
-      <div className="flex min-w-0 max-w-full flex-1 items-center gap-1 overflow-hidden">
+      <div className="flex min-w-0 max-w-full items-center gap-0.5 overflow-hidden">
         <button
           type="button"
           disabled={disabled}
-          className="flex h-7 min-w-0 flex-1 overflow-hidden max-w-[32rem] items-center gap-1 rounded-md border border-transparent px-1.5 text-left text-xs text-slate-500 outline-none transition hover:border-slate-200 hover:bg-slate-50 focus-visible:border-slate-300 focus-visible:ring-2 focus-visible:ring-slate-400/25 disabled:opacity-50 sm:gap-1.5 sm:px-2"
+          className="flex h-7 min-w-0 max-w-[32rem] items-center gap-1 overflow-hidden rounded-md px-1 text-left text-xs outline-none transition hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-emerald-500/30 disabled:opacity-50"
           aria-label={t("editor.tagPicker.open")}
           onClick={() => setOpen(true)}
         >
@@ -160,19 +160,21 @@ export const EditorTagPicker = ({ contentMarkdown, disabled, loadTags, title, va
               {selectedTags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className="shrink-0 whitespace-nowrap rounded-sm bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-600"
+                  className="shrink-0 whitespace-nowrap rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700"
                 >
                   #{tag}
                 </span>
               ))}
               {selectedTags.length > 3 && (
-                <span className="text-xs font-medium text-slate-400">+{selectedTags.length - 3}</span>
+                <span className="text-xs font-medium text-slate-500">+{selectedTags.length - 3}</span>
               )}
             </span>
           ) : (
-            <span className="min-w-0 truncate text-slate-500">{t("editor.tagPlaceholder")}</span>
+            <span className="flex min-w-0 items-center gap-1 px-0.5 text-slate-500 hover:text-slate-800">
+              <Plus className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              <span className="truncate">{t("editor.tagPicker.addShort")}</span>
+            </span>
           )}
-          <ChevronDown className="h-3.5 w-3.5 shrink-0 text-slate-400" />
         </button>
 
         <TooltipProvider delayDuration={0} skipDelayDuration={0}>
@@ -195,7 +197,7 @@ export const EditorTagPicker = ({ contentMarkdown, disabled, loadTags, title, va
                     ? <Check className="h-3.5 w-3.5" />
                     : aiStatus.kind === "error"
                     ? <CircleAlert className="h-3.5 w-3.5" />
-                    : <TagPlus className="h-3.5 w-3.5" />}
+                    : <Sparkles className="h-3.5 w-3.5" />}
               </button>
             </TooltipTrigger>
             <TooltipContent side="bottom">{aiDescription}</TooltipContent>

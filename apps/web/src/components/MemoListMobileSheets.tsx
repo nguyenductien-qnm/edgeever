@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, type ReactNode } from "react";
-import { CheckSquare, FileDown, Folder as NotebookIcon, KeyRound, LayoutList, List, Merge, Paperclip, Star, Tag, Trash2, X } from "lucide-react";
+import { AlignJustify, CheckSquare, FileDown, Folder as NotebookIcon, KeyRound, LayoutList, List, Merge, Paperclip, Star, Tag, Trash2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
@@ -96,6 +96,7 @@ export const MobileListActionsSheet = ({
     () => [
       { value: "preview" as const, label: t("options.memoDensity.preview"), icon: <LayoutList className="h-4 w-4" /> },
       { value: "compact" as const, label: t("options.memoDensity.compact"), icon: <List className="h-4 w-4" /> },
+      { value: "minimal" as const, label: t("options.memoDensity.minimal"), icon: <AlignJustify className="h-4 w-4" /> },
     ],
     [t]
   );
@@ -317,36 +318,57 @@ export const MobileSelectionMoreSheet = ({
           <X className="h-4 w-4" />
         </Button>
       </header>
-      <button
-        className="flex h-12 w-full items-center gap-3 border-b border-slate-100 px-4 text-left text-sm font-medium text-slate-800 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-slate-300 disabled:opacity-100 disabled:hover:bg-transparent"
-        type="button"
-        disabled={!canToggleVisibleSelection}
-        title={selectionToggleTitle}
-        onClick={onToggleVisibleSelection}
-      >
-        <CheckSquare className="h-4 w-4" />
-        {selectionToggleLabel}
-      </button>
-      <button
-        className="flex h-12 w-full items-center gap-3 border-b border-slate-100 px-4 text-left text-sm font-medium text-slate-800 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-slate-300 disabled:opacity-100 disabled:hover:bg-transparent"
-        type="button"
-        disabled={!canMerge}
-        title={mergeTitle}
-        onClick={onMerge}
-      >
-        <Merge className="h-4 w-4" />
-        {t("mobileSheets.mergeMemos")}
-      </button>
-      <button
-        className="flex h-12 w-full items-center gap-3 border-b border-slate-100 px-4 text-left text-sm font-medium text-slate-800 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-slate-300 disabled:opacity-100 disabled:hover:bg-transparent"
-        type="button"
-        disabled={!canPin}
-        title={pinTitle}
-        onClick={onPin}
-      >
-        <Star className="h-4 w-4" />
-        {pinLabel}
-      </button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="block w-full border-b border-slate-100">
+            <button
+              className="flex h-12 w-full items-center gap-3 px-4 text-left text-sm font-medium text-slate-800 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-slate-300 disabled:opacity-100 disabled:hover:bg-transparent"
+              type="button"
+              disabled={!canToggleVisibleSelection}
+              aria-label={selectionToggleTitle}
+              onClick={onToggleVisibleSelection}
+            >
+              <CheckSquare className="h-4 w-4" />
+              {selectionToggleLabel}
+            </button>
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">{selectionToggleTitle}</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="block w-full border-b border-slate-100">
+            <button
+              className="flex h-12 w-full items-center gap-3 px-4 text-left text-sm font-medium text-slate-800 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-slate-300 disabled:opacity-100 disabled:hover:bg-transparent"
+              type="button"
+              disabled={!canMerge}
+              aria-label={mergeTitle}
+              onClick={onMerge}
+            >
+              <Merge className="h-4 w-4" />
+              {t("mobileSheets.mergeMemos")}
+            </button>
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">{mergeTitle}</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="block w-full border-b border-slate-100">
+            <button
+              className="flex h-12 w-full items-center gap-3 px-4 text-left text-sm font-medium text-slate-800 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-slate-300 disabled:opacity-100 disabled:hover:bg-transparent"
+              type="button"
+              disabled={!canPin}
+              aria-label={pinTitle}
+              onClick={onPin}
+            >
+              <Star className="h-4 w-4" />
+              {pinLabel}
+            </button>
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">{pinTitle}</TooltipContent>
+      </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
           <span className="block w-full border-b border-slate-100">
@@ -367,7 +389,6 @@ export const MobileSelectionMoreSheet = ({
       <button
         className="flex h-12 w-full items-center gap-3 px-4 text-left text-sm font-medium text-slate-800 transition hover:bg-slate-50"
         type="button"
-        title={t("mobileSheets.clearSelection")}
         aria-label={t("mobileSheets.clearSelection")}
         onClick={onClearSelection}
       >

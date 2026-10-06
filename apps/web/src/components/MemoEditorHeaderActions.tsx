@@ -3,11 +3,12 @@ import { MoreHorizontal, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { ExecutionCenterButton } from "@/components/execution/ExecutionCenterButton";
 import { GitHubRepositoryLink } from "@/components/GitHubRepositoryLink";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -34,13 +35,6 @@ export const MemoEditorHeaderActions = ({
   return (
     <>
       {textNoteActions}
-      <GitHubRepositoryLink
-        className={cn(
-          buttonVariants({ variant: "ghost", size: "icon" }),
-          "hidden text-slate-500 hover:text-slate-950 sm:inline-flex",
-        )}
-        iconClassName="h-4 w-4"
-      />
       <ExecutionCenterButton className="h-8 w-8" onClick={onOpenExecutionCenter} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -69,6 +63,15 @@ export const MemoEditorHeaderActions = ({
             </DropdownMenuItem>
           ) : null}
           {moreMenuItems}
+          <DropdownMenuSeparator className="my-1 h-px bg-slate-100" />
+          <DropdownMenuItem asChild>
+            <GitHubRepositoryLink
+              className="flex h-9 w-full cursor-pointer items-center gap-2 px-3 text-left text-xs text-slate-700 outline-none hover:bg-slate-50"
+              iconClassName="h-4 w-4 text-slate-500"
+              showLabel
+              showTooltip={false}
+            />
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </>

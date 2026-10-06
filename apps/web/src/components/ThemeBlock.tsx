@@ -2,6 +2,7 @@ import { Node, mergeAttributes } from "@tiptap/core";
 import { NodeViewContent, NodeViewWrapper, ReactNodeViewRenderer, type NodeViewProps } from "@tiptap/react";
 import { Lightbulb, MessageCircle, PanelTop, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { ButtonTooltip } from "@/components/ui/button-tooltip";
 
 export const THEME_BLOCK_KINDS = ["intro", "key-point", "callout", "chapter"] as const;
 export type ThemeBlockKind = (typeof THEME_BLOCK_KINDS)[number];
@@ -29,16 +30,17 @@ const ThemeBlockView = ({ node, deleteNode, selected }: NodeViewProps) => {
           <Icon aria-hidden="true" className="h-3.5 w-3.5" />
           {t(`editorToolbar.themeBlocks.${kind}`)}
         </span>
-        <button
-          type="button"
-          className="edgeever-theme-block__delete"
-          aria-label={t("editorToolbar.deleteThemeBlock")}
-          title={t("editorToolbar.deleteThemeBlock")}
-          onMouseDown={(event) => event.preventDefault()}
-          onClick={deleteNode}
-        >
-          <Trash2 aria-hidden="true" className="h-3.5 w-3.5" />
-        </button>
+        <ButtonTooltip title={t("editorToolbar.deleteThemeBlock")}>
+          <button
+            type="button"
+            className="edgeever-theme-block__delete"
+            aria-label={t("editorToolbar.deleteThemeBlock")}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={deleteNode}
+          >
+            <Trash2 aria-hidden="true" className="h-3.5 w-3.5" />
+          </button>
+        </ButtonTooltip>
       </div>
       <NodeViewContent className="edgeever-theme-block__content" />
     </NodeViewWrapper>

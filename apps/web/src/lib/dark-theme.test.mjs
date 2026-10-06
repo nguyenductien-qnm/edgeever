@@ -42,7 +42,7 @@ describe("dark theme contracts", () => {
     const memoCard = readFileSync(new URL("../components/MemoCard.tsx", import.meta.url), "utf8");
     expect(css).toContain(":root.dark .edgeever-public-share .ProseMirror");
     expect(css).toContain("color: hsl(var(--foreground));");
-    expect(css).toContain("--workspace-memo-divider: #3b4540;");
+    expect(css).toContain("--workspace-memo-divider: #3a3f46;");
     expect(css).toContain(":root.dark .edgeever-workspace-memo-list .edgeever-memo-divider");
     expect(memoCard).toContain("edgeever-memo-divider");
     expect(memoCard).not.toContain("dark:lg:border-slate-300");
@@ -67,22 +67,22 @@ describe("dark theme contracts", () => {
   test("workspace dark surfaces stay neutral and bundled editor themes blend into the canvas", () => {
     const css = readFileSync(new URL("../styles/globals.css", import.meta.url), "utf8");
 
-    expect(css).toContain("--workspace-canvas: #101311;");
-    expect(css).toContain("--workspace-sidebar: #121612;");
-    expect(css).toContain("--workspace-memo-list: #151a17;");
+    expect(css).toContain("--workspace-canvas: #101214;");
+    expect(css).toContain("--workspace-sidebar: #131518;");
+    expect(css).toContain("--workspace-memo-list: #16181c;");
     expect(css).toContain("--workspace-editor: #191e1b;");
     expect(css).toContain(':not([data-editor-theme="custom"])');
     expect(css).toContain("--editor-theme-bg: var(--workspace-editor);");
-    expect(contrastRatio("#cad4ce", "#191e1b")).toBeGreaterThanOrEqual(4.5);
-    expect(contrastRatio("#9aa9a0", "#191e1b")).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio("#ced3d9", "#191e1b")).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio("#9ea5af", "#191e1b")).toBeGreaterThanOrEqual(4.5);
   });
 
   test("dark chrome uses workspace tokens instead of leftover blue-slate", () => {
     const css = readFileSync(new URL("../styles/globals.css", import.meta.url), "utf8");
 
-    expect(css).toContain("--tooltip-bg: #2c3330;");
-    expect(css).toContain("--scrollbar-thumb: rgb(137 150 142 / 0.38);");
-    expect(css).toContain("--search-match: rgb(22 160 110 / 0.32);");
+    expect(css).toContain("--tooltip-bg: #2b2f35;");
+    expect(css).toContain("--scrollbar-thumb: rgb(138 145 155 / 0.38);");
+    expect(css).toContain("--search-match: rgb(59 130 246 / 0.32);");
     expect(css).toContain(":root.dark .ProseMirror .edgeever-mermaid-preview");
     expect(css).toContain("background: var(--workspace-editor);");
     expect(css).toContain("border-color: var(--workspace-divider);");

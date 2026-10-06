@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, type DragEvent } from "react";
 import { useTranslation } from "react-i18next";
 import * as m from "motion/react-m";
-import { ChevronDown, MoreHorizontal, Notebook as NotebookIcon, Plus, Pencil, Trash2 } from "lucide-react";
+import { ChevronDown, MoreHorizontal, Folder, FolderOpen, Inbox, Plus, Pencil, Trash2 } from "lucide-react";
 import type { NotebookNode, NotebookDropPosition } from "@/lib/app-helpers";
 import {
   hasMemoDragData,
@@ -14,6 +14,7 @@ import {
   setMemoDragPreview,
 } from "@/lib/app-helpers";
 import { cn } from "@/lib/utils";
+import { ButtonTooltip } from "@/components/ui/button-tooltip";
 import { formatNotebookMemoCount, type Notebook } from "@edgeever/shared";
 import {
   ContextMenu,
@@ -175,7 +176,7 @@ export const NotebookTreeItem = ({
           <div
             data-notebook-id={node.id}
             className={cn(
-              "group relative flex h-9 items-center gap-1 rounded-md px-2 text-xs transition-all duration-200 select-none",
+              "group relative flex h-9 items-center gap-1 rounded-md px-2 text-[13px] transition-all duration-200 select-none",
               selected
                 ? "edgeever-workspace-selection font-medium text-slate-950"
                 : hasSelectedDescendant
@@ -201,22 +202,23 @@ export const NotebookTreeItem = ({
             style={{ paddingLeft: `${8 + depth * 14}px` }}
           >
             {hasChildren ? (
-              <button
-                className="flex h-6 w-5 items-center justify-center rounded hover:bg-slate-100/50 transition-colors"
-                type="button"
-                onClick={() => onOpenChange(node.id, !open)}
-                title={t("notebookTree.expandCollapse")}
-                aria-label={open ? t("notebookTree.collapse", { name: node.name }) : t("notebookTree.expand", { name: node.name })}
-                aria-expanded={open}
-              >
-                <ChevronDown
-                  className={cn(
-                    "h-4 w-4 transition-transform duration-150 ease-out",
-                    open ? "rotate-0" : "-rotate-90"
-                  )}
-                  aria-hidden="true"
-                />
-              </button>
+              <ButtonTooltip title={open ? t("notebookTree.collapse", { name: node.name }) : t("notebookTree.expand", { name: node.name })}>
+                <button
+                  className="flex h-6 w-5 items-center justify-center rounded hover:bg-slate-100/50 transition-colors"
+                  type="button"
+                  onClick={() => onOpenChange(node.id, !open)}
+                  aria-label={open ? t("notebookTree.collapse", { name: node.name }) : t("notebookTree.expand", { name: node.name })}
+                  aria-expanded={open}
+                >
+                  <ChevronDown
+                    className={cn(
+                      "h-4 w-4 transition-transform duration-150 ease-out",
+                      open ? "rotate-0" : "-rotate-90"
+                    )}
+                    aria-hidden="true"
+                  />
+                </button>
+              </ButtonTooltip>
             ) : (
               <span className="h-6 w-5 shrink-0" aria-hidden="true" />
             )}
@@ -263,42 +265,48 @@ export const NotebookTreeItem = ({
                 }
               }}
             >
-              <NotebookIcon className={cn("h-4 w-4 shrink-0 transition-colors duration-200", selected || hasSelectedDescendant ? "text-slate-700" : "text-slate-500")} />
+              {(() => {
+                const NotebookGlyph = isInbox ? Inbox : hasChildren && open ? FolderOpen : Folder;
+                return <NotebookGlyph className={cn("h-4 w-4 shrink-0 transition-colors duration-200", selected ? "text-emerald-600" : hasSelectedDescendant ? "text-slate-700" : "text-slate-500")} />;
+              })()}
               <span
                 className={cn(
-                  "truncate font-medium transition-colors duration-200",
-                  selected ? "text-slate-950" : hasSelectedDescendant ? "text-slate-900" : "text-slate-800 group-hover:text-slate-950"
+                  "truncate transition-colors duration-200",
+                  selected ? "font-medium text-slate-950" : hasSelectedDescendant ? "text-slate-900" : "text-slate-800 group-hover:text-slate-950"
                 )}
               >
                 {node.name}
               </span>
-              <span
-                className={cn(
-                  "shrink-0 tabular-nums text-xs font-normal transition-colors duration-200",
-                  selected ? "text-slate-600 font-medium" : "text-slate-400 group-hover:text-slate-500"
-                )}
-                aria-hidden="true"
-              >
-                {formatNotebookMemoCount({ directCount: node.directMemoCount, totalCount: node.memoCount, hasChildren }, showDescendantNotes)}
-              </span>
+              {node.memoCount > 0 && (
+                <span
+                  className={cn(
+                    "shrink-0 tabular-nums text-xs font-normal transition-colors duration-200",
+                    selected ? "text-slate-600" : "text-slate-500 group-hover:text-slate-600"
+                  )}
+                  aria-hidden="true"
+                >
+                  {formatNotebookMemoCount({ directCount: node.directMemoCount, totalCount: node.memoCount, hasChildren }, showDescendantNotes)}
+                </span>
+              )}
             </button>
             <div ref={actionsRef} className="relative shrink-0">
-                <button
-                  className={cn(
-                    "edgeever-reveal-on-touch hidden h-6 w-6 items-center justify-center rounded-md group-focus-within:flex group-hover:flex transition-colors duration-150",
-                    selected ? "hover:bg-slate-200" : "hover:bg-slate-100"
-                  )}
-                  type="button"
-                  title={t("notebookTree.actions")}
-                  aria-label={t("notebookTree.actionsAria", { name: node.name })}
-                  aria-expanded={actionsOpen}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setActionsOpen((openValue) => !openValue);
-                  }}
-                >
-                  <MoreHorizontal className="h-3.5 w-3.5" />
-                </button>
+                <ButtonTooltip title={t("notebookTree.actions")}>
+                  <button
+                    className={cn(
+                      "edgeever-reveal-on-touch hidden h-6 w-6 items-center justify-center rounded-md group-focus-within:flex group-hover:flex transition-colors duration-150",
+                      selected ? "hover:bg-slate-200" : "hover:bg-slate-100"
+                    )}
+                    type="button"
+                    aria-label={t("notebookTree.actionsAria", { name: node.name })}
+                    aria-expanded={actionsOpen}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setActionsOpen((openValue) => !openValue);
+                    }}
+                  >
+                    <MoreHorizontal className="h-3.5 w-3.5" />
+                  </button>
+                </ButtonTooltip>
               {actionsOpen && (
                 <m.div className="absolute right-0 top-8 z-50 w-44 overflow-hidden rounded-md border border-slate-200 bg-card p-1 text-slate-950 shadow-lg" {...contentEnterMotion}>
                   <button

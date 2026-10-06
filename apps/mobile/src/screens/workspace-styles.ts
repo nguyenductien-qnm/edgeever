@@ -755,6 +755,10 @@ const baseWorkspaceStyles = StyleSheet.create({
     marginBottom: 10,
     minHeight: 84,
   },
+  memoCardMinimal: {
+    marginBottom: 6,
+    minHeight: 44,
+  },
   memoCardSelected: {
     backgroundColor: "#f8fafc",
     borderColor: "#cbd5e1",
@@ -766,6 +770,10 @@ const baseWorkspaceStyles = StyleSheet.create({
   },
   memoCardContentCompact: {
     padding: 12,
+  },
+  memoCardContentMinimal: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
   },
   memoCardContentWithSelection: {
     paddingLeft: 12,

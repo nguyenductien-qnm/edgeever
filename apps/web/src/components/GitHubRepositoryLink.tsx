@@ -21,6 +21,7 @@ export const GitHubRepositoryLink = ({
   href = GITHUB_REPOSITORY_URL,
   iconClassName,
   label,
+  showLabel = false,
   showTooltip = true,
 }: {
   children?: ReactNode;
@@ -28,20 +29,21 @@ export const GitHubRepositoryLink = ({
   href?: string;
   iconClassName?: string;
   label?: string;
+  showLabel?: boolean;
   showTooltip?: boolean;
 }) => {
   const { t } = useTranslation();
   const resolvedTitle = label ?? t("common.githubRepository");
   const link = (
     <a
-      aria-label={children ? undefined : resolvedTitle}
+      aria-label={children || showLabel ? undefined : resolvedTitle}
       className={cn("inline-flex items-center gap-2", className)}
       href={href}
       rel="noopener noreferrer"
       target="_blank"
     >
       <GitHubMark className={cn("h-4 w-4 shrink-0", iconClassName)} />
-      {children}
+      {showLabel ? <span>{resolvedTitle}</span> : children}
     </a>
   );
 

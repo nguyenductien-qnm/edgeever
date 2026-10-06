@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { MemoSortMode } from "@edgeever/client";
 import { Modal, ScrollView, View } from "react-native";
-import { Check, CheckSquare, FileText, Folder, List, MoreVertical, Sparkles, Tag, Trash2, X } from "../components/icons";
+import { AlignJustify, Check, CheckSquare, FileText, Folder, List, MoreVertical, Sparkles, Tag, Trash2, X } from "../components/icons";
 import { Pressable, Text } from "../components/LocalizedText";
 import type { MobileMemoListDensity } from "../lib/preferences";
 import { styles } from "./workspace-styles";
@@ -142,6 +142,12 @@ export const NotesActionsModal = ({
             icon={<List color={memoListDensity === "compact" ? "#10b981" : "#64748b"} size={18} />}
             label="紧凑列表"
             onPress={() => onMemoListDensityChange("compact")}
+          />
+          <SheetOptionRow
+            active={memoListDensity === "minimal"}
+            icon={<AlignJustify color={memoListDensity === "minimal" ? "#10b981" : "#64748b"} size={18} />}
+            label="极简列表"
+            onPress={() => onMemoListDensityChange("minimal")}
           />
           <View style={styles.listActionDivider} />
           <Text style={styles.actionSheetSectionTitle}>排序方式</Text>

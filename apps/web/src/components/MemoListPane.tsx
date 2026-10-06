@@ -29,6 +29,7 @@ import {
   ArrowDownWideNarrow,
   LayoutList,
   List,
+  AlignJustify,
   FileText as FileIcon,
   Star,
   RotateCcw,
@@ -50,9 +51,12 @@ import {
   Printer,
   Pencil,
   Copy,
+  Check,
+  ListFilter,
 } from "lucide-react";
 import { WeChatIcon } from "./WeChatIcon";
 import { Button } from "@/components/ui/button";
+import { ButtonTooltip } from "@/components/ui/button-tooltip";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -70,7 +74,6 @@ import { WeChatCopyProgress } from "./WeChatCopyProgress";
 import { cn } from "@/lib/utils";
 import { WORKSPACE_PAGE_TITLE_CLASSNAME } from "@/lib/workspace-ui";
 import type { Notebook, MemoSummary } from "@edgeever/shared";
-import { toggleMobileMemoFilterMode } from "@edgeever/shared/mobile-ui";
 import type {
   MemoFilterMode,
   MemoSortMode,
@@ -291,7 +294,6 @@ const MobileSelectionActionButton = ({
     className="flex h-12 flex-col items-center justify-center gap-1 rounded-md text-xs font-medium text-slate-700 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/70 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:text-slate-300 disabled:opacity-100 disabled:hover:bg-transparent"
     type="button"
     disabled={disabled}
-    title={title}
     aria-label={title}
     onClick={onClick}
   >
@@ -528,7 +530,6 @@ export const MemoListPane = ({
 
   const filterOptions = useMemo(() => getMemoFilterOptions(t), [t]);
   const memoSortOptions = useMemo(() => getMemoSortOptions(t), [t]);
-  const mobileFilterOptions = useMemo(() => filterOptions.filter((option: any) => option.value !== "all"), [filterOptions]);
   const visibleMemoIds = useMemo(() => memos.map((memo) => memo.id), [memos]);
   const moveNotebookOptions = useMemo(() => getNotebookMoveOptions(notebooks), [notebooks]);
   const selectedMemosInList = useMemo(() => memos.filter((memo) => selectedMemoIds.has(memo.id)), [memos, selectedMemoIds]);
@@ -569,8 +570,8 @@ export const MemoListPane = ({
   const visibleSelectionToggleLabel = allVisibleMemosSelected ? t("memoList.selectedListNone") : t("memoList.selectedListAll");
 
   const listTitle = view === "trash" ? t("memoList.trash") : selectedTag ? `#${selectedTag}` : notebook?.name ?? t("memoList.allMemos");
-  const listContextLabel = view === "trash" ? t("memoList.deletedMemos") : selectedTag ? t("memoList.tagFilter") : notebook ? t("memoList.currentNotebook") : t("memoList.allNotebooks");
-  const visibleCount = `${memos.length}${memos.length !== totalMemoCount ? ` / ${totalMemoCount}` : ""}`;
+  // A numeric count lets i18next pick the singular form; partial loads keep the "loaded / total" string.
+  const visibleCount = memos.length !== totalMemoCount ? `${memos.length} / ${totalMemoCount}` : memos.length;
   const listCountLabel = view === "trash"
     ? t("memoList.deletedCount", { count: visibleCount })
     : t("memoList.memoCount", { count: visibleCount });
@@ -1098,7 +1099,6 @@ export const MemoListPane = ({
             <button
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
               type="button"
-              title={t("memoList.clearSelection")}
               aria-label={t("memoList.clearSelection")}
               onClick={onClearSelection}
             >
@@ -1111,7 +1111,6 @@ export const MemoListPane = ({
             <button
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
               type="button"
-              title={t("memoList.cancelSearch")}
               aria-label={t("memoList.cancelSearch")}
               onClick={onCancelMobileSearch}
             >
@@ -1159,7 +1158,6 @@ export const MemoListPane = ({
                 <button
                   className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
                   type="button"
-                  title={t("memoList.clearSearch")}
                   aria-label={t("memoList.clearSearch")}
                   onMouseDown={(event) => event.preventDefault()}
                   onClick={handleClearSearch}
@@ -1185,7 +1183,6 @@ export const MemoListPane = ({
                 <button
                   className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
                   type="button"
-                  title={t("notebookPane.backToList")}
                   aria-label={t("notebookPane.backToList")}
                   onClick={view === "trash" ? onBackFromTrash : onClearTag}
                 >
@@ -1195,7 +1192,6 @@ export const MemoListPane = ({
               <button
                 className="flex min-w-0 items-center gap-1 rounded-md px-1 py-1 text-left transition hover:bg-slate-100 lg:hidden"
                 type="button"
-                title={t("memoList.switchNotebook")}
                 aria-label={t("memoList.switchNotebook")}
                 onClick={onOpenNotebookPicker}
               >
@@ -1206,7 +1202,6 @@ export const MemoListPane = ({
             <button
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
               type="button"
-              title={selectionMode ? t("memoList.bulkActions") : t("memoList.listOptions")}
               aria-label={selectionMode ? t("memoList.bulkActions") : t("memoList.listOptions")}
               aria-expanded={selectionMode ? mobileMoreOpen : mobileListActionsOpen}
               onClick={() => {
@@ -1235,11 +1230,11 @@ export const MemoListPane = ({
               <ChevronLeft className="h-4 w-4" />
             </Button>
           )}
-          <div className="min-w-0">
+          <div className="flex min-w-0 items-baseline gap-2">
             <div className={`truncate ${WORKSPACE_PAGE_TITLE_CLASSNAME}`}>{listTitle}</div>
-            <div className="mt-0.5 truncate text-xs text-slate-500">
-              {listContextLabel} · {listCountLabel}
-            </div>
+            <span className="shrink-0 text-xs tabular-nums text-slate-500" aria-label={listCountLabel}>
+              {visibleCount}
+            </span>
           </div>
         </div>
 
@@ -1277,16 +1272,17 @@ export const MemoListPane = ({
               placeholder={t("memoList.searchPlaceholder")}
             />
             {search && (
-              <button
-                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-slate-400 transition hover:bg-card hover:text-slate-700"
-                type="button"
-                title={t("memoList.clearSearch")}
-                aria-label={t("memoList.clearSearch")}
-                onMouseDown={(event) => event.preventDefault()}
-                onClick={handleClearSearch}
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
+              <ButtonTooltip title={t("memoList.clearSearch")}>
+                <button
+                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-slate-400 transition hover:bg-card hover:text-slate-700"
+                  type="button"
+                  aria-label={t("memoList.clearSearch")}
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={handleClearSearch}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </ButtonTooltip>
             )}
           </div>
           <DropdownMenu>
@@ -1346,7 +1342,13 @@ export const MemoListPane = ({
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger className="text-xs">{listDensity === "compact" ? t("memoList.compactList") : t("memoList.previewList")}</DropdownMenuSubTrigger>
+                <DropdownMenuSubTrigger className="text-xs">
+                  {listDensity === "minimal"
+                    ? t("memoList.minimalList")
+                    : listDensity === "compact"
+                      ? t("memoList.compactList")
+                      : t("memoList.previewList")}
+                </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent className="w-40 border border-slate-200 bg-card py-1 shadow-md">
                   <DropdownMenuItem
                     className={cn("text-xs", listDensity === "preview" && "bg-slate-100 text-slate-900")}
@@ -1361,6 +1363,13 @@ export const MemoListPane = ({
                   >
                     <List className="h-4 w-4 text-slate-500" />
                     {t("memoList.compactList")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className={cn("text-xs", listDensity === "minimal" && "bg-slate-100 text-slate-900")}
+                    onClick={() => handleListDensityChange("minimal")}
+                  >
+                    <AlignJustify className="h-4 w-4 text-slate-500" />
+                    {t("memoList.minimalList")}
                   </DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
@@ -1403,26 +1412,40 @@ export const MemoListPane = ({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <div className="flex shrink-0 items-center gap-2 lg:hidden">
-            {mobileFilterOptions.map((option: any) => (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <button
-                key={option.value}
                 className={cn(
-                  "flex h-mobile-control w-mobile-control items-center justify-center rounded-full border transition",
-                  filterMode === option.value
-                    ? "border-slate-700 bg-slate-700 text-white shadow-[0_8px_18px_rgba(15,23,42,0.16)]"
-                    : "border-slate-200 bg-card text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+                  "flex h-mobile-control shrink-0 items-center gap-1.5 rounded-full border px-3 text-sm font-medium transition lg:hidden",
+                  filterMode === "all"
+                    ? "border-slate-200 bg-card text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    : "border-emerald-200 bg-emerald-50 text-emerald-800"
                 )}
                 type="button"
-                title={filterMode === option.value ? t("memoList.toggleOffFilter", { label: option.label }) : option.label}
-                aria-label={filterMode === option.value ? t("memoList.toggleOffFilter", { label: option.label }) : option.label}
-                aria-pressed={filterMode === option.value}
-                onClick={() => handleFilterModeChange(toggleMobileMemoFilterMode(filterMode, option.value))}
+                aria-label={t("memoList.filterTitle", { label: activeFilterLabel })}
               >
-                {getMobileFilterIcon(option.value)}
+                {filterMode === "all" ? <ListFilter className="h-4 w-4" /> : getMobileFilterIcon(filterMode)}
+                <span className="max-w-[6rem] truncate">{activeFilterLabel}</span>
+                <ChevronDown className="h-3.5 w-3.5 opacity-60" />
               </button>
-            ))}
-          </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48 border border-slate-200 bg-card py-1 shadow-md">
+              {filterOptions.map((option: any) => (
+                <DropdownMenuItem
+                  key={option.value}
+                  className={cn(
+                    "flex h-11 w-full items-center gap-2 px-3 text-left text-sm cursor-pointer outline-none",
+                    filterMode === option.value ? "bg-slate-100 text-slate-900" : "text-slate-700 hover:bg-slate-50",
+                  )}
+                  onClick={() => handleFilterModeChange(option.value)}
+                >
+                  {getMobileFilterIcon(option.value)}
+                  <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                  {filterMode === option.value && <Check className="h-4 w-4 text-emerald-600" />}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {hasListConstraint && (
@@ -1479,23 +1502,43 @@ export const MemoListPane = ({
             </Button>
           </div>
         ) : memos.length === 0 ? (
-          <div className="rounded-md border border-dashed border-slate-300 bg-card px-4 py-9 text-center">
-            <div className="text-sm font-semibold text-slate-800">
-              {memos.length === 0 ? (view === "trash" ? t("memoList.trashEmptyTitle") : t("memoList.emptyTitle")) : t("memoList.noFilteredTitle")}
+          <div className="flex min-h-[60%] flex-col items-center justify-center px-6 py-10 text-center">
+            {hasListConstraint && view !== "trash" ? (
+              <Search className="h-6 w-6 text-slate-300" aria-hidden="true" />
+            ) : view === "trash" ? (
+              <Trash2 className="h-6 w-6 text-slate-300" aria-hidden="true" />
+            ) : (
+              <FileIcon className="h-6 w-6 text-slate-300" aria-hidden="true" />
+            )}
+            <div className="mt-3 text-sm font-semibold text-slate-800">
+              {view === "trash"
+                ? t("memoList.trashEmptyTitle")
+                : hasListConstraint
+                  ? t("memoList.noFilteredTitle")
+                  : t("memoList.emptyTitle")}
             </div>
-            <div className="mx-auto mt-2 max-w-[260px] text-xs leading-5 text-slate-500">
-              {memos.length === 0
-                ? view === "trash"
-                  ? t("memoList.trashEmptyDescription")
-                  : t("memoList.emptyDescription")
-                : t("memoList.noFilteredDescription")}
+            <div className="mx-auto mt-1.5 max-w-[240px] text-xs leading-5 text-slate-500">
+              {view === "trash"
+                ? t("memoList.trashEmptyDescription")
+                : hasListConstraint
+                  ? t("memoList.noFilteredDescription")
+                  : t("memoList.emptyDescription")}
             </div>
-            {memos.length === 0 && canCreateMemo && view !== "trash" && (
+            {view !== "trash" && hasListConstraint ? (
+              <Button
+                className="mt-4 justify-center"
+                size="sm"
+                variant="outline"
+                onClick={searchActive ? handleClearSearch : handleResetListConstraints}
+              >
+                {searchActive ? t("memoList.clearSearch") : t("memoList.reset")}
+              </Button>
+            ) : view !== "trash" && canCreateMemo ? (
               <Button className="mt-4 justify-center" size="sm" variant="solid" onClick={() => onCreateMemo()} disabled={isCreating}>
                 <FilePlus2 className="h-4 w-4" />
                 {t("memoList.newMemo")}
               </Button>
-            )}
+            ) : null}
           </div>
         ) : (
           <div className="lg:overflow-hidden">

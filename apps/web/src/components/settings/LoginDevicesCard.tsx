@@ -3,6 +3,7 @@ import { Check, Laptop, MonitorSmartphone, Pencil, Smartphone, Tablet, X } from 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { ButtonTooltip } from "@/components/ui/button-tooltip";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   SETTINGS_CARD_HEADER_CLASSNAME,
@@ -167,7 +168,9 @@ export const LoginDevicesCard = ({ authRequired, isLoggingOut, onLogout }: Login
                           </span>
                         ) : null}
                       </div>
-                      <p className="mt-0.5 truncate text-xs text-slate-500" title={session.userAgent ?? undefined}>{details}</p>
+                      <ButtonTooltip title={session.userAgent ?? undefined}>
+                        <p className="mt-0.5 truncate text-xs text-slate-500" tabIndex={session.userAgent ? 0 : undefined}>{details}</p>
+                      </ButtonTooltip>
                       {location ? <p className="mt-0.5 truncate text-xs text-slate-500">{t("loginDevices.location", { location })}</p> : null}
                       <p className="mt-1 text-xs text-slate-500">
                         {t("loginDevices.lastSeen", { time: formatSessionTime(session.lastSeenAt, locale) })}

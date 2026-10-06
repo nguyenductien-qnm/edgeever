@@ -19,6 +19,7 @@ import { RefreshCw, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import * as m from "motion/react-m";
 import { Button } from "@/components/ui/button";
+import { ButtonTooltip } from "@/components/ui/button-tooltip";
 import { MemoListPane, MemoSelectionActionBar } from "./MemoListPane";
 import { MobileBottomNav, MobileNotebookPicker } from "./WorkspaceMobileChrome";
 import { QuickMemoSwitcher } from "./QuickMemoSwitcher";
@@ -3265,20 +3266,21 @@ export const WorkspaceApp = ({
               desktopActionsOpen={desktopActionsOpen}
               setDesktopActionsOpen={setDesktopActionsOpen}
             />
-            <div
-              className="absolute inset-y-0 right-[-3px] z-20 hidden w-1.5 cursor-col-resize transition hover:bg-slate-300/70 focus-visible:bg-slate-400/80 focus-visible:outline-none lg:block"
-              role="separator"
-              aria-orientation="vertical"
-              aria-valuemin={MIN_MEMO_LIST_WIDTH_PX}
-              aria-valuemax={MAX_MEMO_LIST_WIDTH_PX}
-              aria-valuenow={memoListWidth}
-              aria-label={t("workspaceDialogs.resizeMemoList")}
-              tabIndex={0}
-              title={t("workspaceDialogs.resizeMemoListHint")}
-              onDoubleClick={handleResetMemoListWidth}
-              onKeyDown={handleMemoListResizeKeyDown}
-              onPointerDown={handleMemoListResizePointerDown}
-            />
+            <ButtonTooltip title={t("workspaceDialogs.resizeMemoListHint")} side="right">
+              <div
+                className="absolute inset-y-0 right-[-3px] z-20 hidden w-1.5 cursor-col-resize transition hover:bg-slate-300/70 focus-visible:bg-slate-400/80 focus-visible:outline-none lg:block"
+                role="separator"
+                aria-orientation="vertical"
+                aria-valuemin={MIN_MEMO_LIST_WIDTH_PX}
+                aria-valuemax={MAX_MEMO_LIST_WIDTH_PX}
+                aria-valuenow={memoListWidth}
+                aria-label={t("workspaceDialogs.resizeMemoList")}
+                tabIndex={0}
+                onDoubleClick={handleResetMemoListWidth}
+                onKeyDown={handleMemoListResizeKeyDown}
+                onPointerDown={handleMemoListResizePointerDown}
+              />
+            </ButtonTooltip>
           </section>
 
           <section className={cn("edgeever-workspace-editor min-h-0 min-w-0 lg:block", visibleActivePane === "editor" ? "block" : "hidden", showMobileSettingsNav && "pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0")}>

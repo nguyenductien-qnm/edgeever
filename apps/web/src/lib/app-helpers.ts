@@ -12,7 +12,7 @@ export type MemoView = "notebook" | "trash";
 export type { MemoFilterMode, MemoSortMode } from "@edgeever/client";
 export type NotebookSortMode = "custom" | "name-asc" | "memo-count-desc" | "updated-desc";
 export type EditorContentAlignment = "start" | "center";
-export type MemoListDensity = "preview" | "compact";
+export type MemoListDensity = "preview" | "compact" | "minimal";
 export type ShortcutAction =
   | "createMemo"
   | "createNotebook"
@@ -423,7 +423,7 @@ export const writeEditorPhonePreviewFollowPreference = (enabled: boolean) => {
 export const readMemoListDensityPreference = (): MemoListDensity => {
   try {
     const density = window.localStorage.getItem(MEMO_LIST_DENSITY_STORAGE_KEY);
-    return density === "compact" ? "compact" : "preview";
+    return density === "compact" || density === "minimal" ? density : "preview";
   } catch {
     return "preview";
   }

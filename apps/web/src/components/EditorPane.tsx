@@ -1178,7 +1178,7 @@ const RichEditorPane = ({
         starterKit: {
           codeBlock: false,
           link: false,
-          dropcursor: { color: "#16A06E", width: 2 },
+          dropcursor: { color: "#3B82F6", width: 2 },
         },
         image: false,
         gallery: EditableImageGallery,
@@ -3778,7 +3778,7 @@ const RichEditorPane = ({
             }}
             trailingActions={(
               <>
-                {!readOnly && (
+                {!readOnly && desktopReadingProtection && (
                   <IconTooltip label={`${t(desktopReadingProtection ? "editor.disableReadingProtection" : "editor.enableReadingProtection")} (${formatShortcutBinding(shortcutSettings.toggleReadingProtection)})`}>
                     <Button
                       className={cn(
@@ -3804,9 +3804,6 @@ const RichEditorPane = ({
 
           <div ref={setHeaderStatusCluster} className="absolute right-1 top-0 flex h-full shrink-0 items-center gap-1 sm:right-2">
             <div className="flex min-w-0 items-center gap-1.5">
-              <span className="hidden shrink-0 whitespace-nowrap text-xs tabular-nums text-slate-400 sm:inline">
-                {t("editor.characterCount", { count: characterCount })}
-              </span>
             {imageUploadState !== "idle" && (
               <span
                 className={cn(
@@ -3852,7 +3849,6 @@ const RichEditorPane = ({
               className={cn("inline-flex max-w-[5.5rem] truncate rounded-full px-2 py-1 text-xs font-medium sm:hidden", mobileStatusClassName)}
               role="status"
               aria-live="polite"
-              title={saveConflictReason ?? undefined}
               aria-label={saveState === "conflict" && saveConflictReason ? `${saveLabel}. ${saveConflictReason}` : undefined}
               {...statusSettleMotion}
             >
@@ -3941,6 +3937,22 @@ const RichEditorPane = ({
               onSearch={() => openNoteSearch()}
               textNoteMenuItems={(
                 <>
+                  <div className="px-3 pb-1.5 pt-1 text-xs tabular-nums text-slate-500" role="note">
+                    {t("editor.characterCount", { count: characterCount })}
+                  </div>
+                  <DropdownMenuSeparator className="my-1 h-px bg-slate-100" />
+                  {!readOnly && (
+                    <DropdownMenuItem
+                      className="flex h-9 w-full items-center gap-2 px-3 text-left text-xs text-slate-700 hover:bg-slate-50 cursor-pointer outline-none"
+                      onClick={toggleDesktopReadingProtection}
+                    >
+                      {desktopReadingProtection ? <LockOpen className="h-4 w-4 text-slate-500" /> : <Lock className="h-4 w-4 text-slate-500" />}
+                      <span className="min-w-0 flex-1 truncate">
+                        {t(desktopReadingProtection ? "editor.disableReadingProtection" : "editor.enableReadingProtection")}
+                      </span>
+                      <span className="text-xs text-slate-400">{formatShortcutBinding(shortcutSettings.toggleReadingProtection)}</span>
+                    </DropdownMenuItem>
+                  )}
                   {!isMobileViewport && !useMobilePlainTextEditor && !useMarkdownSourceEditor && (
                     <DropdownMenuItem
                       className="flex h-9 w-full items-center gap-2 px-3 text-left text-xs text-slate-700 hover:bg-slate-50 cursor-pointer outline-none"

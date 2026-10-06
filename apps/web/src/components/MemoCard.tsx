@@ -337,13 +337,22 @@ export const MemoCard = ({
         isLast && "lg:border-b-transparent",
         listDensity === "compact" ? "rounded-md shadow-none" : "rounded-lg shadow-[0_4px_16px_rgba(15,23,42,0.045)] lg:shadow-none",
         !selectionMode && selected
-          ? "edgeever-workspace-selection border-[var(--workspace-divider)] bg-workspace-selection lg:border-[var(--workspace-divider)] lg:bg-workspace-selection"
+          ? "edgeever-workspace-selection border-[var(--brand-green-border)] bg-workspace-selection lg:border-[var(--brand-green-border)] lg:bg-workspace-selection"
           : checked
             ? "bg-slate-50 ring-1 ring-slate-200 lg:border-[var(--workspace-divider)] lg:bg-[var(--workspace-selection)] lg:ring-0"
             : "active:bg-slate-50 lg:hover:bg-workspace-hover"
       )}
     >
-      <div className={cn("flex min-h-[132px] items-center", listDensity === "compact" && "min-h-[84px] lg:min-h-[76px]")}>
+      <div
+        className={cn(
+          "flex items-center lg:min-h-[132px]",
+          listDensity === "minimal"
+            ? "min-h-[40px] lg:min-h-[36px]"
+            : listDensity === "compact"
+              ? "min-h-[84px] lg:min-h-[76px]"
+              : undefined
+        )}
+      >
         {showSelectionControl && (
           <Tooltip><TooltipTrigger asChild><button
             className="ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/70 focus-visible:ring-offset-2 lg:ml-3 lg:h-6 lg:w-6"
@@ -370,8 +379,8 @@ export const MemoCard = ({
         )}
         <button
           className={cn(
-            "min-w-0 flex-1 px-4 py-3.5 text-left touch-pan-y focus-visible:bg-slate-50 focus-visible:shadow-[inset_3px_0_0_rgb(148,163,184)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-400/60 [-webkit-touch-callout:none] lg:py-3.5 transition-all duration-200",
-            listDensity === "compact" && "py-2.5",
+            "min-w-0 flex-1 px-4 text-left touch-pan-y focus-visible:bg-slate-50 focus-visible:shadow-[inset_3px_0_0_rgb(148,163,184)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-400/60 [-webkit-touch-callout:none] transition-all duration-200",
+            listDensity === "minimal" ? "py-2 lg:py-1.5" : listDensity === "compact" ? "py-2.5 lg:py-3.5" : "py-3.5 lg:py-3.5",
             showSelectionControl && "pl-3 lg:pl-3",
             !isTrashView && !multiSelectKeyDown && "lg:cursor-grab lg:active:cursor-grabbing",
             multiSelectKeyDown && "cursor-copy"
@@ -389,88 +398,101 @@ export const MemoCard = ({
           onContextMenu={handleContextMenu}
           onKeyDown={handleKeyDown}
         >
-          <div className={cn("mb-1.5 flex min-w-0 items-center gap-1.5 text-[14px] font-semibold tracking-[-0.012em] leading-snug text-slate-950", listDensity === "compact" && "mb-0.5")}>
+          <div
+            className={cn(
+              "flex min-w-0 items-center gap-1.5 leading-snug text-slate-950",
+              listDensity === "minimal"
+                ? "mb-0 text-[13.5px] font-medium"
+                : listDensity === "compact"
+                  ? "mb-0.5 text-[14px] font-semibold tracking-[-0.012em]"
+                  : "mb-1.5 text-[14px] font-semibold tracking-[-0.012em]"
+            )}
+          >
             {memo.isPinned && <Star className="h-4 w-4 shrink-0 fill-amber-400 text-amber-500" />}
             <span className="min-w-0 truncate">{memoTitle}</span>
           </div>
-          {diagramLabel ? (
-            <div className="space-y-1.5">
-              <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="inline-flex shrink-0 items-center text-slate-500">
-                      <DiagramIcon className="h-3.5 w-3.5" aria-hidden="true" />
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>{diagramLabel}</TooltipContent>
-                </Tooltip>
-                {memo.diagramPreview ? (
-                  <span>{t("diagram.listCounts", { nodes: memo.diagramPreview.nodeCount, edges: memo.diagramPreview.edgeCount })}</span>
-                ) : (
-                  <span>{diagramLabel}</span>
-                )}
-              </div>
-              {listDensity !== "compact" && memo.diagramPreview?.labels.length ? (
-                <div className="line-clamp-2 text-xs leading-relaxed text-slate-600">{memo.diagramPreview.labels.join(" · ")}</div>
-              ) : null}
-            </div>
-          ) : memo.infographic ? (
-            <div className="flex items-center text-xs text-slate-500">
-              <PieChart className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-              <span className="sr-only">{t("infographic.name")}</span>
-            </div>
-          ) : tableLabel ? (
-            <div className="space-y-1.5">
-              <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="inline-flex shrink-0 items-center text-slate-500">
-                      <Table2 className="h-3.5 w-3.5" aria-hidden="true" />
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>{tableLabel}</TooltipContent>
-                </Tooltip>
-                {memo.tablePreview ? (
-                  <span>{t("structuredTable.listCounts", { records: memo.tablePreview.recordCount, fields: memo.tablePreview.fieldCount })}</span>
-                ) : (
-                  <span>{tableLabel}</span>
-                )}
-              </div>
-              {listDensity !== "compact" && memo.tablePreview?.fieldNames.length ? (
-                <div className="line-clamp-2 text-xs leading-relaxed text-slate-600">{memo.tablePreview.fieldNames.join(" · ")}</div>
-              ) : null}
-            </div>
-          ) : (
-            <div
-              className={cn(
-                "line-clamp-2 min-h-10 text-xs leading-relaxed text-slate-500",
-                listDensity === "compact" && "line-clamp-1 min-h-0"
+          {listDensity !== "minimal" && (
+            <>
+              {diagramLabel ? (
+                <div className="space-y-1.5">
+                  <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="inline-flex shrink-0 items-center text-slate-500">
+                          <DiagramIcon className="h-3.5 w-3.5" aria-hidden="true" />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>{diagramLabel}</TooltipContent>
+                    </Tooltip>
+                    {memo.diagramPreview ? (
+                      <span>{t("diagram.listCounts", { nodes: memo.diagramPreview.nodeCount, edges: memo.diagramPreview.edgeCount })}</span>
+                    ) : (
+                      <span>{diagramLabel}</span>
+                    )}
+                  </div>
+                  {listDensity !== "compact" && memo.diagramPreview?.labels.length ? (
+                    <div className="line-clamp-2 text-xs leading-relaxed text-slate-600">{memo.diagramPreview.labels.join(" · ")}</div>
+                  ) : null}
+                </div>
+              ) : memo.infographic ? (
+                <div className="flex items-center text-xs text-slate-500">
+                  <PieChart className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                  <span className="sr-only">{t("infographic.name")}</span>
+                </div>
+              ) : tableLabel ? (
+                <div className="space-y-1.5">
+                  <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="inline-flex shrink-0 items-center text-slate-500">
+                          <Table2 className="h-3.5 w-3.5" aria-hidden="true" />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>{tableLabel}</TooltipContent>
+                    </Tooltip>
+                    {memo.tablePreview ? (
+                      <span>{t("structuredTable.listCounts", { records: memo.tablePreview.recordCount, fields: memo.tablePreview.fieldCount })}</span>
+                    ) : (
+                      <span>{tableLabel}</span>
+                    )}
+                  </div>
+                  {listDensity !== "compact" && memo.tablePreview?.fieldNames.length ? (
+                    <div className="line-clamp-2 text-xs leading-relaxed text-slate-600">{memo.tablePreview.fieldNames.join(" · ")}</div>
+                  ) : null}
+                </div>
+              ) : (
+                <div
+                  className={cn(
+                    "line-clamp-2 text-xs leading-relaxed text-slate-600 lg:min-h-10",
+                    listDensity === "compact" && "line-clamp-1 min-h-0"
+                  )}
+                >
+                  {memoExcerpt}
+                </div>
               )}
-            >
-              {memoExcerpt}
-            </div>
+              <div className={cn("mt-2 flex flex-wrap items-center gap-2 lg:mt-3.5", listDensity === "compact" && "mt-1.5 lg:mt-1.5")}>
+                <time className="text-xs font-normal text-slate-600" dateTime={listTimestamp.value}>
+                  {listTimestamp.field === "createdAt"
+                    ? t("memoCard.createdAt", { time: listTimestampLabel })
+                    : listTimestampLabel}
+                </time>
+                {memo.tags.slice(0, 3).map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-xs tracking-tight text-emerald-700"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            </>
           )}
-          <div className={cn("mt-3.5 flex flex-wrap items-center gap-2", listDensity === "compact" && "mt-1.5")}>
-            <time className="text-xs font-normal text-slate-500 " dateTime={listTimestamp.value}>
-              {listTimestamp.field === "createdAt"
-                ? t("memoCard.createdAt", { time: listTimestampLabel })
-                : listTimestampLabel}
-            </time>
-            {memo.tags.slice(0, 3).map((tag) => (
-              <span
-                key={tag}
-                className="text-xs tracking-tight text-slate-400"
-              >
-                #{tag}
-              </span>
-            ))}
-          </div>
         </button>
         {!selectionMode && (
           <div
             className={cn(
-              "mr-2 mt-3 hidden shrink-0 flex-col gap-1 opacity-0 transition-opacity duration-200 focus-within:opacity-100 group-hover:opacity-100 lg:flex",
-              listDensity === "compact" && "lg:mt-2"
+              "mr-2 hidden shrink-0 flex-col gap-1 opacity-0 transition-opacity duration-200 focus-within:opacity-100 group-hover:opacity-100 lg:flex",
+              listDensity === "minimal" ? "my-auto" : listDensity === "compact" ? "mt-3 lg:mt-2" : "mt-3"
             )}
           >
             <Tooltip><TooltipTrigger asChild><button

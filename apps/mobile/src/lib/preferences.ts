@@ -13,13 +13,13 @@ const SHOW_DESCENDANT_NOTES_KEY = "edgeever.mobile.showDescendantNotes";
 const LOCALE_PREFERENCE_KEY = "edgeever.mobile.localePreference";
 const THEME_PREFERENCE_KEY = "edgeever.mobile.themePreference";
 
-export type MobileMemoListDensity = "preview" | "compact";
+export type MobileMemoListDensity = "preview" | "compact" | "minimal";
 export type MobileLocalePreference = "system" | "zh-CN" | "en-US" | "ja" | "pl";
 export type MobileThemePreference = "system" | "light" | "dark";
 
 export const readMobileMemoListDensity = async (): Promise<MobileMemoListDensity> => {
   const value = await AsyncStorage.getItem(MEMO_LIST_DENSITY_KEY);
-  return value === "compact" ? "compact" : "preview";
+  return value === "compact" || value === "minimal" ? value : "preview";
 };
 
 export const writeMobileMemoListDensity = (density: MobileMemoListDensity) => AsyncStorage.setItem(MEMO_LIST_DENSITY_KEY, density);

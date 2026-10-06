@@ -5,6 +5,10 @@ export const MEMO_LIST_MOBILE_ITEM_GAP_PX = 12;
 
 /** Initial row height before measureElement. Matches MemoCard min-heights. */
 export const estimateMemoListItemSize = (density: MemoListDensity, isDesktop: boolean) => {
+  if (density === "minimal") {
+    return isDesktop ? 40 : 48;
+  }
+
   if (density === "compact") {
     return isDesktop ? 80 : 96;
   }

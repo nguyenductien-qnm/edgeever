@@ -86,12 +86,14 @@ export const MobileBottomNav = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-              className="flex h-mobile-touch flex-col items-center justify-center gap-0.5 rounded-md text-xs font-medium text-emerald-700 transition hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 disabled:cursor-not-allowed disabled:opacity-50"
+              className="group mx-auto flex h-mobile-touch flex-col items-center justify-center gap-0.5 rounded-md text-xs font-medium text-slate-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 disabled:cursor-not-allowed disabled:opacity-50"
               type="button"
               aria-label={createMemoLabel}
               disabled={!canCreateMemo || isCreating}
             >
-              <Plus className="h-5 w-5" />
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white shadow-[0_3px_8px_rgb(var(--brand-green-rgb)/0.24)] transition-transform duration-150 group-active:scale-95">
+                <Plus className="h-5 w-5" />
+              </span>
               <span>{t("nav.createMemo")}</span>
             </button>
           </DropdownMenuTrigger>
@@ -237,7 +239,6 @@ export const MobileNotebookPicker = ({
               <button
                 className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-slate-400 transition hover:bg-card hover:text-slate-700"
                 type="button"
-                title={t("mobileNotebookPicker.clearSearch")}
                 aria-label={t("mobileNotebookPicker.clearSearch")}
                 onMouseDown={(event) => event.preventDefault()}
                 onClick={() => setNotebookSearch("")}
